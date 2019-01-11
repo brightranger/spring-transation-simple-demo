@@ -7,6 +7,8 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -26,6 +28,19 @@ public class JdbcConfigurate {
     @Bean
     public DataSourceTransactionManager transactionManager(DataSource dataSource){
         return new DataSourceTransactionManager(dataSource);
+    }
+
+    @Bean
+    public TransactionTemplate transactionTemplate(DataSourceTransactionManager transactionManager){
+        TransactionTemplate transactionTemplate = new TransactionTemplate();
+        transactionTemplate.setTransactionManager(transactionManager);
+        //设置隔离级别
+        transactionTemplate.setIsolationLevel(TransactionDefinition.ISOLATION_DEFAULT);
+        //传播属性
+        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        //设置超时
+        transactionTemplate.setTimeout(30);
+        return transactionTemplate;
     }
 
     @Bean
